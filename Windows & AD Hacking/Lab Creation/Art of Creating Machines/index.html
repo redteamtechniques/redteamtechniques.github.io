@@ -1,0 +1,1757 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.5">
+    
+    
+      
+        <title>Art of Creating Machines - Red Team Techniques</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.2d9f7617.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.e6a45f82.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#00bdd6">
+        
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+
+  <script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-Y39JH8Q7SV"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&gtag("event","search",{search_term:this.value})}),"undefined"!=typeof location$&&location$.subscribe(function(e){gtag("config","G-Y39JH8Q7SV",{page_path:e.pathname})})})</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y39JH8Q7SV"></script>
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="cyan" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#art-of-creating-machines" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Red Team Techniques" class="md-header__button md-logo" aria-label="Red Team Techniques" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Red Team Techniques
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Art of Creating Machines
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../.." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../Forensics/" class="md-tabs__link">
+        Forensics
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link md-tabs__link--active">
+        Windows & AD Hacking
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Red Team Techniques" class="md-nav__button md-logo" aria-label="Red Team Techniques" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Red Team Techniques
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+        
+          
+            
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../../../Forensics/">Forensics</a>
+          
+            <label for="__nav_2">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="Forensics" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Forensics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Forensics/Analyzing%20Memory%20Dumps%20using%20Volatility/" class="md-nav__link">
+        Analyzing Memory Dumps using Volatility
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Forensics/Extracting%20Hashes%20and%20Passwords%20from%20VMWare%20Memory/" class="md-nav__link">
+        Extracting Hashes and Passwords from VMWare Memory Snapshots
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Forensics/How%20to%20capture%20physical%20memory%20to%20disk/" class="md-nav__link">
+        How to capture physical memory to disk
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+        
+          
+            
+          
+        
+          
+        
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../../">Windows & AD Hacking</a>
+          
+            <label for="__nav_3">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="Windows & AD Hacking" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Windows & AD Hacking
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_3_2">
+          Lab Attacks
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Lab Attacks" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          Lab Attacks
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Lab%20Attacks/Abusing%20Parent%20Child%20Domain%20Trusts%20for%20Privilege%20Escalation%20from%20DA%20to%20EA/" class="md-nav__link">
+        Abusing Parent Child Domain Trusts for Privilege Escalation from DA to EA
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Lab%20Attacks/Constrained%20Delegation%20Abuse/" class="md-nav__link">
+        Constrained Delegation Abuse
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Lab%20Attacks/DCShadow%20Attack/" class="md-nav__link">
+        DCShadow Attack
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Lab%20Attacks/JustEnoughAdministration/" class="md-nav__link">
+        Just Enough Administration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Lab%20Attacks/LLMNR%20Poisoning/" class="md-nav__link">
+        LLMNR Poisoning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Lab%20Attacks/Messing%20with%20Kerberos%20using%20Rubeus/" class="md-nav__link">
+        Messing with Kerberos using Rubeus
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Lab%20Attacks/Powershell%20AMSI%20Bypass/" class="md-nav__link">
+        Powershell AMSI Bypass
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Lab%20Attacks/Resource%20Based%20Constrained%20Delegation/" class="md-nav__link">
+        Resource Based Constrained Delegation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Lab%20Attacks/Using%20DCSync%20attack%20to%20steal%20user%20hashes%20in%20a%20domain/" class="md-nav__link">
+        Using DCSync attack to steal user hashes in a domain
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" checked>
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_3_3">
+          Lab Creation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Lab Creation" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Lab Creation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Art of Creating Machines
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Art of Creating Machines
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-getting-started" class="md-nav__link">
+    1) Getting Started
+  </a>
+  
+    <nav class="md-nav" aria-label="1) Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-introduction-to-ugc-program" class="md-nav__link">
+    1.1) Introduction to UGC Program
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-researching" class="md-nav__link">
+    1.2) Researching
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-setting-up-environment" class="md-nav__link">
+    1.3) Setting up Environment
+  </a>
+  
+    <nav class="md-nav" aria-label="1.3) Setting up Environment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#131-linux-environment" class="md-nav__link">
+    1.3.1) Linux Environment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#132-windows-environment" class="md-nav__link">
+    1.3.2) Windows Environment
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-building-machines" class="md-nav__link">
+    2) Building Machines
+  </a>
+  
+    <nav class="md-nav" aria-label="2) Building Machines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-active-directory" class="md-nav__link">
+    2.1) Active Directory
+  </a>
+  
+    <nav class="md-nav" aria-label="2.1) Active Directory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#211-setting-up-an-active-directory-domain" class="md-nav__link">
+    2.1.1) Setting up an Active Directory Domain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#212-joining-a-machine-to-active-directory-domain" class="md-nav__link">
+    2.1.2) Joining a machine to Active Directory Domain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#213-setting-up-child-domain" class="md-nav__link">
+    2.1.3) Setting up Child Domain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#214-configuring-services" class="md-nav__link">
+    2.1.4) Configuring Services
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#215-configuring-ad-accounts" class="md-nav__link">
+    2.1.5) Configuring AD Accounts
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-windows" class="md-nav__link">
+    2.2) Windows
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2) Windows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#221-setting-up-an-windows-machine" class="md-nav__link">
+    2.2.1) Setting up an Windows Machine
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#222-configuring-windows-accounts" class="md-nav__link">
+    2.2.2) Configuring Windows Accounts
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#223-creating-services-using-nssm" class="md-nav__link">
+    2.2.3) Creating Services using nssm
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#224-deploying-apache-server" class="md-nav__link">
+    2.2.4) Deploying Apache Server
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#225-installing-applications" class="md-nav__link">
+    2.2.5) Installing applications
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#226-deploying-mssql-server" class="md-nav__link">
+    2.2.6) Deploying MSSQL Server
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-wrapping-up" class="md-nav__link">
+    2.3) Wrapping Up
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-end" class="md-nav__link">
+    3) The End
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Child%20Domain%20Lab%20Setup/" class="md-nav__link">
+        Child Domain Lab Setup
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Creating%20an%20Active%20Directory%20Domain/" class="md-nav__link">
+        Creating an Active Directory domain
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DCSync%20Lab%20Setup/" class="md-nav__link">
+        DCSync Lab Setup
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Kerberos%20Constrained%20Delegation%20Lab%20Creation/" class="md-nav__link">
+        Kerberos Constrained Delegation Lab Creation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-getting-started" class="md-nav__link">
+    1) Getting Started
+  </a>
+  
+    <nav class="md-nav" aria-label="1) Getting Started">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-introduction-to-ugc-program" class="md-nav__link">
+    1.1) Introduction to UGC Program
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-researching" class="md-nav__link">
+    1.2) Researching
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-setting-up-environment" class="md-nav__link">
+    1.3) Setting up Environment
+  </a>
+  
+    <nav class="md-nav" aria-label="1.3) Setting up Environment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#131-linux-environment" class="md-nav__link">
+    1.3.1) Linux Environment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#132-windows-environment" class="md-nav__link">
+    1.3.2) Windows Environment
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-building-machines" class="md-nav__link">
+    2) Building Machines
+  </a>
+  
+    <nav class="md-nav" aria-label="2) Building Machines">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-active-directory" class="md-nav__link">
+    2.1) Active Directory
+  </a>
+  
+    <nav class="md-nav" aria-label="2.1) Active Directory">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#211-setting-up-an-active-directory-domain" class="md-nav__link">
+    2.1.1) Setting up an Active Directory Domain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#212-joining-a-machine-to-active-directory-domain" class="md-nav__link">
+    2.1.2) Joining a machine to Active Directory Domain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#213-setting-up-child-domain" class="md-nav__link">
+    2.1.3) Setting up Child Domain
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#214-configuring-services" class="md-nav__link">
+    2.1.4) Configuring Services
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#215-configuring-ad-accounts" class="md-nav__link">
+    2.1.5) Configuring AD Accounts
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-windows" class="md-nav__link">
+    2.2) Windows
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2) Windows">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#221-setting-up-an-windows-machine" class="md-nav__link">
+    2.2.1) Setting up an Windows Machine
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#222-configuring-windows-accounts" class="md-nav__link">
+    2.2.2) Configuring Windows Accounts
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#223-creating-services-using-nssm" class="md-nav__link">
+    2.2.3) Creating Services using nssm
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#224-deploying-apache-server" class="md-nav__link">
+    2.2.4) Deploying Apache Server
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#225-installing-applications" class="md-nav__link">
+    2.2.5) Installing applications
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#226-deploying-mssql-server" class="md-nav__link">
+    2.2.6) Deploying MSSQL Server
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-wrapping-up" class="md-nav__link">
+    2.3) Wrapping Up
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-the-end" class="md-nav__link">
+    3) The End
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+  
+                
+
+
+<h1 id="art-of-creating-machines">Art of Creating Machines</h1>
+<h2 id="1-getting-started">1) Getting Started</h2>
+<h3 id="11-introduction-to-ugc-program">1.1) Introduction to UGC Program</h3>
+<p>User-Generated Content Program is a program that allows people to make submission to Offensive Security Proving Grounds lab and receive compensation upon acceptance after being reviewed by the Labs Team.</p>
+<p>As of 11th January 2022, the rewards are as following:</p>
+<p><img alt="Untitled" src="Untitled.png" /></p>
+<p>You can find more information here :</p>
+<ul>
+<li><a href="https://www.offensive-security.com/labs/submit/">https://www.offensive-security.com/labs/submit/</a></li>
+<li><a href="https://help.offensive-security.com/hc/en-us/articles/360049610511-User-Generated-Content-FAQ">https://help.offensive-security.com/hc/en-us/articles/360049610511-User-Generated-Content-FAQ</a></li>
+</ul>
+<h3 id="12-researching">1.2) Researching</h3>
+<p>So before starting to build a machine, you’ll have to first perform a lot of researching to develop an idea for the machine. Following are some examples of what I personally do :</p>
+<ul>
+<li>Great place to start would be on twitter and look for any interesting research by companies / individuals. You should also bookmark them so you can check regularly if they added anything new.</li>
+<li>Stay updated on new vulnerabilities through twitter or <a href="https://portswigger.net/daily-swig/vulnerabilities">The Daily Swig</a> by PortSwigger.</li>
+<li>If you’re planning to build a CVE based machine, browsing through <a href="http://exploit-db.com">exploit-db.com</a> and <a href="http://cve.mitre.org">cve.mitre.org</a> will be very helpful.</li>
+<li>Keep an eye on <a href="https://www.exploit-db.com/papers">Exploit Database Security Papers</a> for new papers.</li>
+</ul>
+<p>In the end it all comes down to how creative you can be with vulnerabilities you have discovered and if they go well with each other to make a complete machine. You can reach out to the Labs Team on <a href="https://discord.com/invite/offsec">Offensive Security Discord</a> in #user-generated-content channel to get your ideas reviewed by them before proceeding to make the machine.</p>
+<h3 id="13-setting-up-environment">1.3) Setting up Environment</h3>
+<p>You can use Vagrant to easily deploy and destroy VM’s on VMware / VirtualBox. Following links will be helpful for the installation and configuring the providers :</p>
+<ul>
+<li><a href="https://www.vagrantup.com/docs/installation">https://www.vagrantup.com/docs/installation</a> [ Vagrant Installation ]</li>
+<li><a href="https://www.vagrantup.com/docs/providers/virtualbox">https://www.vagrantup.com/docs/providers/virtualbox</a> [ VirtualBox Provider ]</li>
+<li><a href="https://www.vagrantup.com/docs/providers/vmware/installation">https://www.vagrantup.com/docs/providers/vmware/installation</a> [ Installing VMware provider ]</li>
+<li><a href="https://vagrantcloud.com/search">https://vagrantcloud.com/search</a> [ VM Images ] **</li>
+</ul>
+<h4 id="131-linux-environment">1.3.1) Linux Environment</h4>
+<p>Following is an example on how to deploy a Ubuntu 20.04 VM using vagrant on VMware provider :</p>
+<p>i) Create a directory with the following structure :</p>
+<p><img alt="Untitled" src="Untitled%201.png" /></p>
+<ul>
+<li><strong>box</strong> directory here will be used for the Vagrant environment.</li>
+<li><strong>data</strong> directory will be mounted on the machine so we can share files easily.</li>
+</ul>
+<p>ii) Move into box directory and run the following command to initialize the directory to be a Vagrant environment by creating an initial Vagrantfile :</p>
+<ul>
+<li><strong>vagrant init bento/ubuntu-20.04</strong></li>
+</ul>
+<p>iii) Next step is to edit VagrantFile :</p>
+<ul>
+<li>Editing VM provider to vmware_desktop and mounting data directory on the machine :</li>
+</ul>
+<p><img alt="Untitled" src="Untitled%202.png" /></p>
+<p>iv) For deploying the VM, run the following command from the box directory :</p>
+<ul>
+<li><strong>vagrant up</strong></li>
+</ul>
+<p>v) To interact with the box, you can ssh by running the following command from the box directory :</p>
+<ul>
+<li><strong>vagrant ssh</strong></li>
+</ul>
+<p><img alt="Untitled" src="Untitled%203.png" /></p>
+<p>vi) To stop the VM, run the following command :</p>
+<ul>
+<li><strong>vagrant halt</strong></li>
+</ul>
+<p>vii) To destroy the VM, run the following command : [ NOTE: Everything will be lost except files in data directory ]</p>
+<ul>
+<li><strong>vagrant destroy</strong></li>
+</ul>
+<h4 id="132-windows-environment">1.3.2) Windows Environment</h4>
+<p>Following is an example on how to deploy a Windows Server 2019 Standard Desktop VM using vagrant on VMware provider :</p>
+<p>i) Create a directory with the following structure :</p>
+<p><img alt="Untitled" src="Untitled%204.png" /></p>
+<ul>
+<li><strong>box</strong> directory here will be used for the Vagrant environment.</li>
+<li><strong>data</strong> directory will be mounted on the machine so we can share files easily.</li>
+</ul>
+<p>ii) Move into box directory and run the following command to initialize the directory to be a Vagrant environment by creating an initial Vagrantfile :</p>
+<ul>
+<li><strong>vagrant init gusztavvargadr/windows-server-2019-standard-desktop</strong></li>
+</ul>
+<p>iii) Next step is to edit VagrantFile :</p>
+<ul>
+<li>Editing VM provider to vmware_desktop and mounting data directory on the machine :</li>
+</ul>
+<p><img alt="Untitled" src="Untitled%205.png" /></p>
+<p>iv) For deploying the VM, run the following command from the box directory :</p>
+<ul>
+<li><strong>vagrant up</strong></li>
+</ul>
+<p>v) To interact with the box, you can ssh by running the following command from the box directory :</p>
+<ul>
+<li><strong>vagrant ssh</strong></li>
+</ul>
+<p><img alt="Untitled" src="Untitled%206.png" /></p>
+<p>vi) To stop the VM, run the following command :</p>
+<ul>
+<li><strong>vagrant halt</strong></li>
+</ul>
+<p>vii) To destroy the VM, run the following command : [ NOTE: Everything will be lost except files in data directory ]</p>
+<ul>
+<li><strong>vagrant destroy</strong></li>
+</ul>
+<h2 id="2-building-machines">2) Building Machines</h2>
+<p>In this section you will find some examples on how to setup / configure certain things for Active Directory and Windows using PowerShell. It will help you get the idea on how things are done.</p>
+<h3 id="21-active-directory">2.1) Active Directory</h3>
+<h4 id="211-setting-up-an-active-directory-domain">2.1.1) Setting up an Active Directory Domain</h4>
+<p>i) After deploying a Windows Server 2019 VM, we’ll change the administrator password and rename the machine using the following powershell commands :</p>
+<pre><code class="language-powershell"># Changing Admin Password
+net user administrator 'P@$$w0rd!1234' /active:yes
+
+# Changing Machine name
+$SecPassword = ConvertTo-SecureString 'P@$$w0rd!1234' -AsPlainText -Force
+$Cred = New-Object System.Management.Automation.PSCredential('Administrator', $SecPassword)
+
+Rename-Computer -NewName &quot;DC01&quot; -DomainCredential $Cred -Restart
+</code></pre>
+<ul>
+<li>Machine will reboot in the end.</li>
+</ul>
+<p>ii) Next we’ll be configuring DNS , installing active directory domain services and promote the server to a domain controller using the following powershell commands :</p>
+<pre><code class="language-powershell"># Setting DNS Server Addresses
+Set-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter).InterfaceIndex -ServerAddresses (&quot;127.0.0.1&quot;,&quot;8.8.8.8&quot;)
+
+# Installing AD Domain Services
+Install-WindowsFeature -Name AD-Domain-Services -IncludeManagementTools
+
+# Promoting to a domain controller
+$SecPassword = ConvertTo-SecureString 'P@$$w0rd!1234' -AsPlainText -Force
+Install-ADDSForest -DomainName &quot;based.offsec&quot; -CreateDnsDelegation:$false -DatabasePath &quot;C:\Windows\NTDS&quot; -SafeModeAdministratorPassword $SecPassword -DomainMode &quot;7&quot; -DomainNetbiosName &quot;BASED&quot; -ForestMode &quot;7&quot; -InstallDns:$true -LogPath &quot;C:\Windows\NTDS&quot; -SysvolPath &quot;C:\Windows\SYSVOL&quot; -Force:$true
+</code></pre>
+<ul>
+<li>For better understanding of Install-ADDSForest arguments please refer : <a href="https://docs.microsoft.com/en-us/powershell/module/addsdeployment/install-addsforest">https://docs.microsoft.com/en-us/powershell/module/addsdeployment/install-addsforest</a></li>
+<li>Machine will reboot in the end.</li>
+</ul>
+<h4 id="212-joining-a-machine-to-active-directory-domain">2.1.2) Joining a machine to Active Directory Domain</h4>
+<p>i) After deploying a windows vm of your choice , we’ll change the local administrator password and rename the machine using the following powershell commands :</p>
+<pre><code class="language-powershell"># Changing Admin Password
+net user administrator 'ClientMachine123!!' /active:yes
+
+# Changing Machine name
+$SecPassword = ConvertTo-SecureString 'ClientMachine123!!' -AsPlainText -Force
+$Cred = New-Object System.Management.Automation.PSCredential('Administrator', $SecPassword)
+
+Rename-Computer -NewName &quot;CLIENT01&quot; -DomainCredential $Cred -Restart
+</code></pre>
+<ul>
+<li>Machine will reboot in the end.</li>
+</ul>
+<p>ii) Next we’ll be configuring the DNS and connecting to the AD Domain :</p>
+<pre><code class="language-powershell"># Setting DNS
+Write-Host &quot;[2] Setting DNS and Connecting to Domain&quot;
+$DC01= Read-Host &quot;Enter DC01 IP Address&quot;
+Set-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter).InterfaceIndex -ServerAddresses (&quot;$DC01&quot;,&quot;8.8.8.8&quot;)
+
+# Adding CLIENT01 to based.offsec domain
+$SecPassword = ConvertTo-SecureString 'P@$$w0rd!1234' -AsPlainText -Force
+$Cred = New-Object System.Management.Automation.PSCredential('BASED\Administrator', $SecPassword)
+Add-Computer -DomainName based.offsec -Credential $Cred -Restart -Force
+</code></pre>
+<ul>
+<li>DC01 should be running.</li>
+<li>Machine will reboot in the end.</li>
+</ul>
+<h4 id="213-setting-up-child-domain">2.1.3) Setting up Child Domain</h4>
+<p>i) After deploying a Windows Server 2019 VM, we’ll change the administrator password and rename the machine using the following powershell commands :</p>
+<pre><code class="language-powershell"># Changing Admin Password
+net user administrator 'VeryBasedIndeed123!'
+
+# Changing Machine name
+$SecPassword = ConvertTo-SecureString 'VeryBasedIndeed123!' -AsPlainText -Force
+$Cred = New-Object System.Management.Automation.PSCredential('Administrator', $SecPassword)
+
+Rename-Computer -NewName &quot;DC02&quot; -DomainCredential $Cred -Restart
+</code></pre>
+<ul>
+<li>Machine will reboot in the end.</li>
+</ul>
+<p>ii) Next we’ll be configuring DNS , Installing Active Directory domain services and promoting to a domain controller in a child domain ( child.based.offsec ) :</p>
+<pre><code class="language-powershell"># Setting DNS Ip Address as DC01
+$DC01= Read-Host &quot;Enter DC01 IP Address&quot;
+Set-DnsClientServerAddress -InterfaceIndex (Get-NetAdapter).InterfaceIndex -ServerAddresses (&quot;$DC01&quot;,&quot;8.8.8.8&quot;)
+
+# Installing AD Domain Services
+Install-WindowsFeature -Name AD-Domain-Services -IncludeManagementTools
+
+# Promoting to a domain controller
+$SecPassword = ConvertTo-SecureString 'P@$$w0rd!1234' -AsPlainText -Force
+$Cred = New-Object System.Management.Automation.PSCredential('BASED\Administrator', $SecPassword)
+Install-ADDSDomain -Credential $Cred -NewDomainName &quot;child&quot; -ParentDomainName &quot;based.offsec&quot; -InstallDNS -CreateDNSDelegation -NewDomainNetbiosName &quot;CHILD&quot; -DomainMode &quot;7&quot; -ReplicationSourceDC &quot;DC01.based.offsec&quot; -SafeModeAdministratorPassword $SecPassword -DatabasePath &quot;C:\Windows\NTDS&quot; -LogPath &quot;C:\Windows\NTDS&quot; -SysvolPath &quot;C:\Windows\SYSVOL&quot; -Force:$true
+</code></pre>
+<ul>
+<li>For better understanding of Install-ADDSDomain arguments, please refer : <a href="https://docs.microsoft.com/en-us/powershell/module/addsdeployment/install-addsdomain?view=windowsserver2022-ps">https://docs.microsoft.com/en-us/powershell/module/addsdeployment/install-addsdomain</a></li>
+<li>DC01 should be running.</li>
+<li>Machine will reboot in the end.</li>
+</ul>
+<h4 id="214-configuring-services">2.1.4) Configuring Services</h4>
+<p>i) Configuring WinRM using PowerShell :</p>
+<pre><code class="language-powershell">Set-Service WinRM -StartMode Automatic
+
+# Verify start mode and state - it should be running
+Get-WmiObject -Class win32_service | Where-Object {$_.name -like &quot;WinRM&quot;}
+
+Set-Item WSMan:localhost\client\trustedhosts -Value * -Force
+
+# Opening WinRM port in firewall
+netsh advfirewall firewall add rule name=&quot;WinRM-HTTP&quot; dir=in localport=5985 protocol=TCP action=allow
+</code></pre>
+<p>ii) Configuring RDP using PowerShell :</p>
+<pre><code class="language-powershell">Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\' -Name &quot;fDenyTSConnections&quot; -Value 0
+Set-ItemProperty 'HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp\' -Name &quot;UserAuthentication&quot; -Value 0
+
+Enable-NetFirewallRule -DisplayGroup &quot;Remote Desktop&quot;
+</code></pre>
+<p>iii) Installing ADCS using PowerShell :</p>
+<pre><code class="language-powershell">Add-WindowsFeature Adcs-Cert-Authority -IncludeManagementTools
+Install-AdcsCertificationAuthority -CAType EnterpriseRootCA -Force:$true
+</code></pre>
+<h4 id="215-configuring-ad-accounts">2.1.5) Configuring AD Accounts</h4>
+<p>i) Disabling password complexity :</p>
+<pre><code class="language-powershell">secedit /export /cfg c:\secpol.cfg
+(gc C:\secpol.cfg).replace(&quot;PasswordComplexity = 1&quot;, &quot;PasswordComplexity = 0&quot;) | Out-File C:\secpol.cfg
+secedit /configure /db c:\windows\security\local.sdb /cfg c:\secpol.cfg /areas SECURITYPOLICY
+rm -force c:\secpol.cfg -confirm:$false
+gpupdate /force
+</code></pre>
+<p>ii) Adding user to an AD domain :</p>
+<pre><code class="language-powershell">$UserPassword = ConvertTo-SecureString 'password123' -AsPlainText -Force
+New-ADUser -Name &quot;Enox&quot; -GivenName &quot;Enox&quot; -SamAccountName &quot;enox&quot; -AccountPassword $UserPassword -ChangePasswordAtLogon $False -Enabled $True 
+</code></pre>
+<p>iii) Active Directory Groups :</p>
+<p>⇒ Remote Management Users - users part of this group are able to WinRM to the machine.</p>
+<pre><code class="language-powershell">net localgroup &quot;Remote Management Users&quot; /add enox /dom
+</code></pre>
+<p>⇒ Remote Desktop Users - users part of this group are able to RDP to the machine. [ NOTE: You’ll also have to grant the user SeRemoteInteractiveLogonRight ]</p>
+<pre><code class="language-powershell"># Adding user to Remote Desktop Users group
+net localgroup &quot;Remote Desktop Users&quot; /add enox /dom
+
+# Granting SeRemoteInteractiveLogonRight using Carbon
+$Identity = &quot;BASED\enox&quot;
+$CarbonDllPath = &quot;C:\Data\Carbon\bin\Carbon.dll&quot;
+[Reflection.Assembly]::LoadFile($CarbonDllPath)
+[Carbon.Lsa]::GrantPrivileges( $Identity , &quot;SeRemoteInteractiveLogonRight&quot; )
+</code></pre>
+<ul>
+<li>Carbon Download Link : <a href="http://get-carbon.org/about_Carbon_Installation.html">http://get-carbon.org/about_Carbon_Installation.html</a></li>
+</ul>
+<p>iv) Configuring ACLs :</p>
+<ul>
+<li>Granting GenericWrite on a user [ siddicky → GenericWrite → enox ] :</li>
+</ul>
+<pre><code class="language-powershell">$ADSI = [ADSI]&quot;LDAP://CN=Enox,CN=Users,DC=based,DC=offsec&quot;
+$IdentityReference = (New-Object System.Security.Principal.NTAccount(&quot;siddicky&quot;)).Translate([System.Security.Principal.SecurityIdentifier])
+$ACE = New-Object System.DirectoryServices.ActiveDirectoryAccessRule $IdentityReference,&quot;GenericWrite&quot;,&quot;Allow&quot;
+$ADSI.psbase.ObjectSecurity.SetAccessRule($ACE)
+$ADSI.psbase.commitchanges()
+</code></pre>
+<ul>
+<li>Granting GenericWrite on Domain Controller [ enox → GenericWrite → DC01 ] :</li>
+</ul>
+<pre><code class="language-powershell">$ADSI = [ADSI]&quot;LDAP://CN=DC01,OU=Domain Controllers,DC=based,DC=offsec&quot;
+$IdentityReference = (New-Object System.Security.Principal.NTAccount(&quot;enox&quot;)).Translate([System.Security.Principal.SecurityIdentifier])
+$ACE = New-Object System.DirectoryServices.ActiveDirectoryAccessRule $IdentityReference,&quot;GenericWrite&quot;,&quot;Allow&quot;
+$ADSI.psbase.ObjectSecurity.SetAccessRule($ACE)
+$ADSI.psbase.commitchanges()
+</code></pre>
+<p>v) Granting a domain user privilege to logon locally on DC :</p>
+<pre><code class="language-powershell">$Identity = &quot;BASED\siddicky&quot;
+$CarbonDllPath = &quot;C:\Data\Carbon\bin\Carbon.dll&quot;
+[Reflection.Assembly]::LoadFile($CarbonDllPath)
+[Carbon.Lsa]::GrantPrivileges( $Identity , &quot;SeInteractiveLogonRight&quot; )
+</code></pre>
+<h3 id="22-windows">2.2) Windows</h3>
+<ul>
+<li>Please check pinned messages in #user-generated-content channel on Offensive Security discord to get the sample build script for windows.</li>
+</ul>
+<h4 id="221-setting-up-an-windows-machine">2.2.1) Setting up an Windows Machine</h4>
+<p>After deploying a Windows VM, we’ll change the administrator password and rename the machine using the following powershell commands :</p>
+<pre><code class="language-powershell"># Changing Admin Password
+net user administrator 'MakingMachines2022!!' /active:yes
+
+# Changing Machine name to BASED
+$SecPassword = ConvertTo-SecureString 'MakingMachines2022!!' -AsPlainText -Force
+$Cred = New-Object System.Management.Automation.PSCredential('Administrator', $SecPassword)
+
+Rename-Computer -NewName &quot;BASED&quot; -DomainCredential $Cred -Restart
+</code></pre>
+<ul>
+<li>Machine will reboot in the end.</li>
+</ul>
+<h4 id="222-configuring-windows-accounts">2.2.2) Configuring Windows Accounts</h4>
+<p>i) Creating user :</p>
+<pre><code class="language-powershell"># Creating user
+net user coaran &quot;VeryBasedMoment!!&quot; /add
+
+## Configuring User Profile
+$password = ConvertTo-SecureString 'VeryBasedMoment!!' -AsPlainText -Force
+$Cred = New-Object System.Management.Automation.PSCredential('BASED\coaran', $password)
+Start-Process PowerShell -Cred $Cred -ArgumentList 'whoami'
+</code></pre>
+<p>ii) Granting Privileges using <a href="http://get-carbon.org/">Carbon</a> :</p>
+<ul>
+<li>You can find list of privileges that can be granted using Carbon <a href="http://get-carbon.org/Grant-Privilege.html">here</a></li>
+<li>Example granting SeBackupPrivilege :</li>
+</ul>
+<pre><code class="language-powershell"># Giving Privileges
+$Identity = &quot;coaran&quot;
+$CarbonDllPath = &quot;C:\Data\Carbon\bin\Carbon.dll&quot;
+[Reflection.Assembly]::LoadFile($CarbonDllPath)
+[Carbon.Lsa]::GrantPrivileges( $Identity , &quot;SeBackupPrivilege&quot; )
+</code></pre>
+<h4 id="223-creating-services-using-nssm">2.2.3) Creating Services using nssm</h4>
+<p>If you have ever wanted to create a service that for example runs a flask application or a powershell script you can use <a href="https://nssm.cc/download">nssm</a> to set it up. </p>
+<ul>
+<li>Installing nssm on the machine using powershell :</li>
+</ul>
+<pre><code class="language-powershell"># Downloading nssm
+Invoke-WebRequest -uri 'https://nssm.cc/release/nssm-2.24.zip' -outfile C:\Windows\Temp\nssm.zip
+
+# Unzipping the files to C:\Program Files
+Expand-Archive -LiteralPath C:\Windows\Temp\nssm.zip -DestinationPath &quot;C:\Program Files&quot;
+
+# Granting read and execute perms for everyone
+cmd /c 'icacls &quot;C:\Program Files\nssm-2.24&quot; /grant Everyone:rx /T'
+</code></pre>
+<p>⇒ Example 1 : [ Running a flask application as a service ]</p>
+<pre><code class="language-powershell"># Creating service
+&amp; &quot;C:\Program Files\nssm-2.24\win64\nssm.exe&quot; install FlaskService &quot;C:\Program Files\Python39\python.exe&quot; &quot;C:\Projects\test\app.py&quot;
+
+# User to run the service as
+&amp; &quot;C:\Program Files\nssm-2.24\win64\nssm.exe&quot; set FlaskService ObjectName 'BASED\coaran' 'VeryBasedMoment!!'
+
+# AUTO_START on system boot
+&amp; &quot;C:\Program Files\nssm-2.24\win64\nssm.exe&quot; set FlaskService Start SERVICE_AUTO_START
+
+# If it fails to start then it will attempt to start again after 20 seconds
+cmd /c 'sc failure FlaskService reset= 0 actions= restart/20/restart/20/restart/20'
+
+# Configuring Privileges to avoid SeImpersonatePrivilege
+cmd /c 'sc privs FlaskService SeChangeNotifyPrivilege/SeCreateGlobalPrivilege/SeIncreaseWorkingSetPrivilege'
+
+# Starting the service
+&amp; &quot;C:\Program Files\nssm-2.24\win64\nssm.exe&quot; start FlaskService
+</code></pre>
+<p>⇒ Example 2 : [ Running powershell script as a service ]</p>
+<pre><code class="language-powershell"># Creating Service
+&amp; &quot;C:\Program Files\nssm-2.24\win64\nssm.exe&quot; install PSService &quot;C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe&quot; &quot;
+-ExecutionPolicy Bypass -NoProfile -File C:\Projects\script.ps1&quot;
+
+# User to run the service as
+&amp; &quot;C:\Program Files\nssm-2.24\win64\nssm.exe&quot; set PSService ObjectName 'BASED\coaran' 'VeryBasedMoment!!'
+
+# AUTO_START on system boot
+&amp; &quot;C:\Program Files\nssm-2.24\win64\nssm.exe&quot; set PSService Start SERVICE_AUTO_START
+
+# If it fails to start then it will attempt to start again after 20 seconds
+cmd /c 'sc failure PSService reset= 0 actions= restart/20/restart/20/restart/20'
+
+# Configuring Privileges to avoid SeImpersonatePrivilege
+cmd /c 'sc privs PSService SeChangeNotifyPrivilege/SeCreateGlobalPrivilege/SeIncreaseWorkingSetPrivilege'
+
+# Starting the service
+&amp; &quot;C:\Program Files\nssm-2.24\win64\nssm.exe&quot; start PSService
+</code></pre>
+<h4 id="224-deploying-apache-server">2.2.4) Deploying Apache Server</h4>
+<p>i) Deploying Apache using xampp :</p>
+<ul>
+<li>Download XAMPP from : <a href="https://sourceforge.net/projects/xampp/files/">https://sourceforge.net/projects/xampp/files/</a></li>
+<li>We’ll be using xampp portable, following is how you can deploy it in powershell :</li>
+</ul>
+<pre><code class="language-powershell"># Downloading and Extracting XAMPP
+iwr -uri 'https://webwerks.dl.sourceforge.net/project/xampp/XAMPP%20Windows/8.1.1/xampp-portable-windows-x64-8.1.1-2-VS16.zip' -outfile C:\Windows\Temp\xampp.zip -TimeoutSec 9999999
+Expand-Archive -LiteralPath C:\Windows\Temp\xampp.zip -DestinationPath &quot;C:\&quot;
+
+# Creating Apache Service
+## Adding user
+net user apache &quot;Password!!&quot; /add
+
+## Granting &quot;Logon as a service&quot; &amp; &quot;Act as part of the Operating System&quot; privilege
+$Identity = &quot;apache&quot;
+$CarbonDllPath = &quot;C:\Data\Carbon\bin\Carbon.dll&quot;
+[Reflection.Assembly]::LoadFile($CarbonDllPath)
+[Carbon.Lsa]::GrantPrivileges( $Identity , &quot;SeServiceLogonRight&quot; )
+[Carbon.Lsa]::GrantPrivileges( $Identity , &quot;SeTcbPrivilege&quot; )
+
+## Granting Perms
+cmd /c 'icacls &quot;C:\xampp&quot; /grant apache:(OI)(CI)F /T'
+
+## Installing Service
+C:\Xampp\apache\bin\httpd.exe -k install -n &quot;Apache HTTP Server&quot;
+cmd /c sc.exe config &quot;ApacheHTTPServer&quot; obj= &quot;.\apache&quot; password= &quot;Password!!&quot;
+
+## Configuring privileges to avoid SeImpersonatePrivilege
+cmd /c sc.exe privs ApacheHTTPServer SeChangeNotifyPrivilege/SeCreateGlobalPrivilege/SeIncreaseWorkingSetPrivilege
+
+cmd /c 'sc failure ApacheHTTPServer reset= 0 actions= restart/20/restart/20/restart/20'
+
+## Adding Firewall rule and starting the service
+New-NetFirewallRule -DisplayName 'Port 80 for Apache' -Profile 'Any' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 80
+
+cmd /c sc.exe start ApacheHTTPServer
+</code></pre>
+<ul>
+<li>Confirming the service is working fine :</li>
+</ul>
+<p><img alt="Untitled" src="Untitled%207.png" /></p>
+<ul>
+<li>If the service failed to start you can take a look at the event logs to find out more information :</li>
+</ul>
+<p><img alt="Untitled" src="Untitled%208.png" /></p>
+<p>For more info on Get-EventLog refer : <a href="https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-eventlog?view=powershell-5.1">https://docs.microsoft.com/en-us/powershell/module/microsoft.powershell.management/get-eventlog</a></p>
+<h4 id="225-installing-applications">2.2.5) Installing applications</h4>
+<p>If you’re trying to install an application on windows using the command line you should search for a guide/documentation to see if you can find anything about it.</p>
+<ul>
+<li>Example : [ Installing Python ]</li>
+</ul>
+<pre><code class="language-powershell"># Downloading the setup
+Invoke-WebRequest -uri 'https://www.python.org/ftp/python/3.9.0/python-3.9.0-amd64.exe' -outfile C:\Windows\Temp\python-3.9.0.exe
+
+# Installing
+C:\Windows\Temp\python-3.9.0.exe /quiet InstallAllUsers=1 PrependPath=1 Include_test=0
+</code></pre>
+<p>Reference : <a href="https://docs.python.org/3/using/windows.html#installing-without-ui">https://docs.python.org/3/using/windows.html#installing-without-ui</a></p>
+<h4 id="226-deploying-mssql-server">2.2.6) Deploying MSSQL Server</h4>
+<p>MSSQL Server can be easily deployed using the following commands : [ Note: Make sure to run as Administrator ]</p>
+<pre><code class="language-powershell"># Retrieving Setup File
+mkdir C:\Downloads
+wget https://go.microsoft.com/fwlink/?linkid=866658 -UseBasicParsing -OutFile C:\Downloads\sqlexpress.exe
+
+# Extracting Setup files
+cmd /c 'C:\Downloads\sqlexpress.exe /ACTION=Download MEDIAPATH=C:\Downloads /MEDIATYPE=Core /QUIET'
+sleep 30
+C:\Downloads\SQLEXPR_x64_ENU.exe /q /x:C:\Downloads\SQLEXPR_2019
+sleep 30
+
+# Copying installation config
+copy C:\Data\ConfigurationFile.ini C:\Downloads\SQLEXPR_2019\ConfigurationFile.ini
+
+# Installing MSSQL using the config.
+C:\Downloads\SQLEXPR_2019\SETUP.EXE /ConfigurationFile=C:\Downloads\SQLEXPR_2019\ConfigurationFile.ini /IAcceptSQLServerLicenseTerms /SAPWD='MyP@$$w0rd'
+</code></pre>
+<ul>
+<li>ConfigurationFile.ini : <a href="https://github.com/CsEnox/just-some-stuff/blob/main/ConfigurationFile.ini">https://github.com/CsEnox/just-some-stuff/blob/main/ConfigurationFile.ini</a></li>
+<li>You can find more information about the setup.exe arguments here : <a href="https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt">https://docs.microsoft.com/en-us/sql/database-engine/install-windows/install-sql-server-from-the-command-prompt</a></li>
+</ul>
+<p>Now to make sure that MSSQL server was successfully deployed, we’ll try running some queries using Invoke-SqlCmd which is part of SqlServer module which has to be installed :</p>
+<pre><code class="language-powershell"># Installing the module 
+Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+Install-Module -Name &quot;SqlServer&quot; -Force
+
+# Running Queries 
+Invoke-SqlCmd -ServerInstance &quot;(local)&quot; -Query &quot;SELECT GETDATE()&quot;
+Invoke-SqlCmd -ServerInstance &quot;(local)&quot; -Query &quot;SELECT SERVERPROPERTY('MachineName')&quot;
+Invoke-SqlCmd -ServerInstance &quot;(local)&quot; -Query &quot;SELECT IS_SRVROLEMEMBER('sysadmin')&quot;
+
+</code></pre>
+<p><img alt="Untitled" src="Untitled%209.png" /></p>
+<h3 id="23-wrapping-up">2.3) Wrapping Up</h3>
+<p>So once you’re done building the machine, you’ll have to drop flags on the machine, do some more configuration and also clean any left over logs/scripts. Following is an example of how I do it for Windows &amp; Active Directory machines :</p>
+<pre><code class="language-powershell">Write-Host &quot;[*] Wrapping Up&quot;
+
+Write-Host &quot;[+] Creating Flags&quot;
+New-Item &quot;C:\Users\Administrator\Desktop\proof.txt&quot;
+Set-Content &quot;C:\Users\Administrator\Desktop\proof.txt&quot; &quot;md5flag here&quot;
+New-Item &quot;C:\Users\coaran\Desktop\local.txt&quot;
+Set-Content &quot;C:\Users\coaran\Desktop\local.txt&quot; &quot;md5 flag here&quot;
+
+Write-Host &quot;[+] Disabling IPv6&quot;
+Disable-NetAdapterBinding -Name &quot;*&quot; -ComponentID ms_tcpip6
+
+Write-Host &quot;[+] Disabling Sleep Mode&quot;
+powercfg /Change monitor-timeout-ac 0
+powercfg /Change monitor-timeout-dc 0
+powercfg /Change standby-timeout-ac 0
+powercfg /Change standby-timeout-dc 0
+powercfg /Change hibernate-timeout-ac 0
+powercfg /Change hibernate-timeout-dc 0
+
+Write-Host &quot;[+] Disabling Windows Update&quot;
+sc stop WaasMedicSvc
+sc stop wuauserv
+sc stop UsoSvc
+Set-ItemProperty -Path &quot;HKLM:\SYSTEM\CurrentControlSet\Services\wuauserv&quot; -Name &quot;Start&quot; -Value 4
+
+Write-Host &quot;[+] Cleaning Up&quot;
+Remove-Item -path C:\Windows\Temp\* -Recurse -Force
+Remove-Item &quot;C:\Users\*\AppData\Roaming\Microsoft\Windows\Recent\*&quot; -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item &quot;C:\Users\*\AppData\Local\Temp\*&quot; -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item &quot;C:\`$Recycle.Bin\*&quot; -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item &quot;C:\Users\*\AppData\Roaming\Microsoft\Windows\PowerShell\PSReadLine\ConsoleHost_history.txt&quot; -Force -ErrorAction SilentlyContinue
+</code></pre>
+<h2 id="3-the-end">3) The End</h2>
+<p>Thank you for reading through the guide and I hope things that I’ve provided will be helpful.</p>
+<ul>
+<li>If you have any questions you can reach out to me on Offensive Security Discord (Discord Tag : Enox#4458) or Twitter (@csenox1)</li>
+</ul>
+
+              
+
+  <!-- Giscus -->
+  <h2 id="__comments">Comments</h2>
+  <!-- Replace with generated snippet -->
+  <script src="https://giscus.app/client.js"
+  data-repo="redteamtechniques/redteamtechniques.github.io"
+  data-repo-id="R_kgDOHCc7xQ"
+  data-category="General"
+  data-category-id="DIC_kwDOHCc7xc4COM2i"
+  data-mapping="title"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="bottom"
+  data-theme="transparent_dark"
+  data-lang="en"
+  crossorigin="anonymous"
+  async>
+</script>
+  <!-- Reload on palette change -->
+  <script>
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object")
+      if (palette.color.scheme === "slate") {
+        var giscus = document.querySelector("script[src*=giscus]")
+        giscus.setAttribute("data-theme", "dark") 
+      }
+
+    /* Register event handlers after documented loaded */
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate" ? "dark" : "light"
+
+          /* Instruct Giscus to change theme */
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../../Lab%20Attacks/Using%20DCSync%20attack%20to%20steal%20user%20hashes%20in%20a%20domain/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Using DCSync attack to steal user hashes in a domain" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Using DCSync attack to steal user hashes in a domain
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../Child%20Domain%20Lab%20Setup/" class="md-footer__link md-footer__link--next" aria-label="Next: Child Domain Lab Setup" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Child Domain Lab Setup
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.indexes"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.467223ff.min.js"></script>
+      
+    
+  </body>
+</html>

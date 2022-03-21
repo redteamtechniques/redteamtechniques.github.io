@@ -1,0 +1,969 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-8.2.5">
+    
+    
+      
+        <title>Analyzing Memory Dumps using Volatility - Red Team Techniques</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.2d9f7617.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
+        
+          
+          
+          <meta name="theme-color" content="#00bdd6">
+        
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+
+  <script>function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","G-Y39JH8Q7SV"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&gtag("event","search",{search_term:this.value})}),"undefined"!=typeof location$&&location$.subscribe(function(e){gtag("config","G-Y39JH8Q7SV",{page_path:e.pathname})})})</script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Y39JH8Q7SV"></script>
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="cyan" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#analyzing-memory-dumps-using-volatility" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="Red Team Techniques" class="md-header__button md-logo" aria-label="Red Team Techniques" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Red Team Techniques
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Analyzing Memory Dumps using Volatility
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+
+
+  <li class="md-tabs__item">
+    <a href="../.." class="md-tabs__link">
+      Home
+    </a>
+  </li>
+
+      
+        
+  
+  
+    
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../" class="md-tabs__link md-tabs__link--active">
+        Forensics
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+
+
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../Windows%20%26%20AD%20Hacking/" class="md-tabs__link">
+        Windows & AD Hacking
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Red Team Techniques" class="md-nav__button md-logo" aria-label="Red Team Techniques" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Red Team Techniques
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+        
+          
+            
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../">Forensics</a>
+          
+            <label for="__nav_2">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="Forensics" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Forensics
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Analyzing Memory Dumps using Volatility
+      </a>
+      
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Extracting%20Hashes%20and%20Passwords%20from%20VMWare%20Memory/" class="md-nav__link">
+        Extracting Hashes and Passwords from VMWare Memory Snapshots
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../How%20to%20capture%20physical%20memory%20to%20disk/" class="md-nav__link">
+        How to capture physical memory to disk
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+        
+          
+            
+          
+        
+          
+        
+          
+        
+      
+      
+        
+        
+        <div class="md-nav__link md-nav__link--index ">
+          <a href="../../Windows%20%26%20AD%20Hacking/">Windows & AD Hacking</a>
+          
+            <label for="__nav_3">
+              <span class="md-nav__icon md-icon"></span>
+            </label>
+          
+        </div>
+      
+      <nav class="md-nav" aria-label="Windows & AD Hacking" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Windows & AD Hacking
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_2" type="checkbox" id="__nav_3_2" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_3_2">
+          Lab Attacks
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Lab Attacks" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_2">
+          <span class="md-nav__icon md-icon"></span>
+          Lab Attacks
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Windows%20%26%20AD%20Hacking/Lab%20Attacks/Abusing%20Parent%20Child%20Domain%20Trusts%20for%20Privilege%20Escalation%20from%20DA%20to%20EA/" class="md-nav__link">
+        Abusing Parent Child Domain Trusts for Privilege Escalation from DA to EA
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Windows%20%26%20AD%20Hacking/Lab%20Attacks/Constrained%20Delegation%20Abuse/" class="md-nav__link">
+        Constrained Delegation Abuse
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Windows%20%26%20AD%20Hacking/Lab%20Attacks/DCShadow%20Attack/" class="md-nav__link">
+        DCShadow Attack
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Windows%20%26%20AD%20Hacking/Lab%20Attacks/JustEnoughAdministration/" class="md-nav__link">
+        Just Enough Administration
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Windows%20%26%20AD%20Hacking/Lab%20Attacks/LLMNR%20Poisoning/" class="md-nav__link">
+        LLMNR Poisoning
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Windows%20%26%20AD%20Hacking/Lab%20Attacks/Messing%20with%20Kerberos%20using%20Rubeus/" class="md-nav__link">
+        Messing with Kerberos using Rubeus
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Windows%20%26%20AD%20Hacking/Lab%20Attacks/Powershell%20AMSI%20Bypass/" class="md-nav__link">
+        Powershell AMSI Bypass
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Windows%20%26%20AD%20Hacking/Lab%20Attacks/Resource%20Based%20Constrained%20Delegation/" class="md-nav__link">
+        Resource Based Constrained Delegation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Windows%20%26%20AD%20Hacking/Lab%20Attacks/Using%20DCSync%20attack%20to%20steal%20user%20hashes%20in%20a%20domain/" class="md-nav__link">
+        Using DCSync attack to steal user hashes in a domain
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3_3" type="checkbox" id="__nav_3_3" >
+      
+      
+      
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      
+      
+        <label class="md-nav__link" for="__nav_3_3">
+          Lab Creation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Lab Creation" data-md-level="2">
+        <label class="md-nav__title" for="__nav_3_3">
+          <span class="md-nav__icon md-icon"></span>
+          Lab Creation
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Windows%20%26%20AD%20Hacking/Lab%20Creation/Art%20of%20Creating%20Machines/" class="md-nav__link">
+        Art of Creating Machines
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Windows%20%26%20AD%20Hacking/Lab%20Creation/Child%20Domain%20Lab%20Setup/" class="md-nav__link">
+        Child Domain Lab Setup
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Windows%20%26%20AD%20Hacking/Lab%20Creation/Creating%20an%20Active%20Directory%20Domain/" class="md-nav__link">
+        Creating an Active Directory domain
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Windows%20%26%20AD%20Hacking/Lab%20Creation/DCSync%20Lab%20Setup/" class="md-nav__link">
+        DCSync Lab Setup
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Windows%20%26%20AD%20Hacking/Lab%20Creation/Kerberos%20Constrained%20Delegation%20Lab%20Creation/" class="md-nav__link">
+        Kerberos Constrained Delegation Lab Creation
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+  
+                
+
+
+<h1 id="analyzing-memory-dumps-using-volatility">Analyzing Memory Dumps using Volatility</h1>
+<p>This guide will demonstrate how to extract useful information and analyze a memory dump using volatility</p>
+<p>Volatility supports a lot of formats, here are some:</p>
+<ul>
+<li>Raw/Padded Physical Memory</li>
+<li>Firewire (IEEE 1394)</li>
+<li>Expert Witness (EWF)</li>
+<li>32- and 64-bit Windows Crash Dump</li>
+<li>32- and 64-bit Windows Hibernation (from Windows 7 or earlier)</li>
+<li>32- and 64-bit Mach-O files</li>
+<li>Virtualbox Core Dumps</li>
+<li>VMware Saved State (.vmss) and Snapshot (.vmsn)</li>
+<li>HPAK Format (FastDump)</li>
+<li>QEMU memory dumps</li>
+<li>LiME format</li>
+</ul>
+<p>It also supports a lot of operating system formats!</p>
+<ul>
+<li>
+<p><strong>Click me to display operating system support</strong></p>
+<p>Volatility supports investigations of the following memory images:<a href="https://en.wikipedia.org/wiki/Volatility_(memory_forensics)#cite_note-4">[4]</a></p>
+<p>Windows:</p>
+<ul>
+<li>32-bit Windows XP (Service Pack 2 and 3)</li>
+<li>32-bit Windows 2003 Server (Service Pack 0, 1, 2)</li>
+<li>32-bit Windows Vista (Service Pack 0, 1, 2)</li>
+<li>32-bit Windows 2008 Server (Service Pack 1, 2)</li>
+<li>32-bit Windows 7 (Service Pack 0, 1)</li>
+<li>32-bit Windows 8, 8.1, and 8.1 Update 1</li>
+<li>32-bit Windows 10 (initial support)</li>
+<li>64-bit Windows XP (Service Pack 1 and 2)</li>
+<li>64-bit Windows 2003 Server (Service Pack 1 and 2)</li>
+<li>64-bit Windows Vista (Service Pack 0, 1, 2)</li>
+<li>64-bit Windows 2008 Server (Service Pack 1 and 2)</li>
+<li>64-bit Windows 2008 R2 Server (Service Pack 0 and 1)</li>
+<li>64-bit Windows 7 (Service Pack 0 and 1)</li>
+<li>64-bit Windows 8, 8.1, and 8.1 Update 1</li>
+<li>64-bit Windows Server 2012 and 2012 R2</li>
+<li>64-bit Windows 10 (including at least 10.0.14393)</li>
+<li>64-bit Windows Server 2016 (including at least 10.0.14393.0)</li>
+</ul>
+<p>Mac OSX:</p>
+<ul>
+<li>32-bit 10.5.x Leopard (the only 64-bit 10.5 is Server, which isn't supported)</li>
+<li>32-bit 10.6.x Snow Leopard</li>
+<li>32-bit 10.7.x Lion</li>
+<li>64-bit 10.6.x Snow Leopard</li>
+<li>64-bit 10.7.x Lion</li>
+<li>64-bit 10.8.x Mountain Lion</li>
+<li>64-bit 10.9.x Mavericks</li>
+<li>64-bit 10.10.x Yosemite</li>
+<li>64-bit 10.11.x El Capitan</li>
+<li>64-bit 10.12.x Sierra</li>
+<li>64-bit 10.13.x High Sierra</li>
+<li>64-bit 10.14.x Mojave</li>
+<li>64-bit 10.15.x Catalina</li>
+</ul>
+<p>Linux:</p>
+<ul>
+<li>32-bit Linux kernels 2.6.11 to 5.5</li>
+<li>64-bit Linux kernels 2.6.11 to 5.5</li>
+<li>OpenSuSE, Ubuntu, Debian, CentOS, Fedora, Mandriva, etc.</li>
+</ul>
+<p>Source: Wikipedia</p>
+</li>
+</ul>
+<p>The syntax of volatility is pretty simple:</p>
+<pre><code class="language-jsx">$ volatility -f [path to memory dump] [module to use] [...optional commands, module specific]
+</code></pre>
+<p>To analyze an image with volatility, we have first to figure out the profile to use for it, we can determinate profile using a KDBG search.</p>
+<h1 id="1-determining-profile">1. Determining profile</h1>
+<p>Determining the profile using volatility is pretty easy:</p>
+<pre><code class="language-jsx">$ volatility -f [path to memory dump] imageinfo
+</code></pre>
+<p>The output should be something similar to this:</p>
+<p><img alt="Analyzing%20Memory%20Dumps%20using%20Volatility/Untitled.png" src="Untitled.png" /></p>
+<p>Important: <strong>We can see from these results that volatility is suggesting us to use WinXPSP2x86 or WinXPSP3x86 profile. I know this is a Windows XP SP 3 machine, so I am going to use WinXPSP3x86.</strong></p>
+<p>Now that we identified the profile, we can run several modules on this image. You can get a list of available modules using the <code>-h</code> option, there are a lot of them</p>
+<p><img alt="Analyzing%20Memory%20Dumps%20using%20Volatility/Untitled%201.png" src="Untitled%201.png" /></p>
+<ul>
+<li>And that's not only everything.</li>
+</ul>
+<p>Let's run some modules.</p>
+<h1 id="2-dumping-the-sam-database-using-volatility">2. Dumping the SAM database using Volatility</h1>
+<p>The module name is named <code>hashdump</code> and you can run it like this: <code>volatility_2.6_win64_standalone -f windows_xp.vmem hashdump --profile=WinXPSP3x86</code>. This will return the NTLM hashes (NT:LM) of the users on the machine.</p>
+<h1 id="3-scanning-the-memory-for-history-of-commands-ran">3. Scanning the memory for history of commands ran</h1>
+<p>You can scan commands ran on the machine using volatility, the module name is named <code>cmdscan</code> and you can use it like this <code>volatility_2.6_win64_standalone -f windows_xp.vmem cmdscan --profile=WinXPSP3x86</code></p>
+<p>You will get an output like this:</p>
+<p><img alt="Analyzing%20Memory%20Dumps%20using%20Volatility/Untitled%202.png" src="Untitled%202.png" /></p>
+<h1 id="4-getting-a-list-of-processes">4. Getting a list of processes</h1>
+<p>You can get a list of processes that were running on the machine using the <code>pslist</code> or <code>psscan</code> modules. <code>psscan</code> is more detailed, I will be using <code>pslist</code> in this example, you can use it like this: <code>volatility_2.6_win64_standalone -f windows_xp.vmem psscan --profile=WinXPSP3x86</code></p>
+<p>You will get an output like this:</p>
+<p><img alt="Analyzing%20Memory%20Dumps%20using%20Volatility/Untitled%203.png" src="Untitled%203.png" /></p>
+<h1 id="5-other-interesting-modules">5. Other interesting modules</h1>
+<p>There are a ton of interesting modules in Volatility, here are others you can use:</p>
+<ul>
+<li><code>clipboard</code> - dump the clipboard</li>
+<li><code>dlldump / dlllist</code> - dump, respectively list loaded dlls</li>
+<li><code>evtlogs</code> - extract event log (win xp / 2003 only)</li>
+<li><code>dumpfiles</code> - dump cached files</li>
+<li><code>memdump</code> - Dump the addressable memory for a process</li>
+<li>There are many other cool modules in volatility</li>
+</ul>
+
+              
+
+  <!-- Giscus -->
+  <h2 id="__comments">Comments</h2>
+  <!-- Replace with generated snippet -->
+  <script src="https://giscus.app/client.js"
+  data-repo="redteamtechniques/redteamtechniques.github.io"
+  data-repo-id="R_kgDOHCc7xQ"
+  data-category="General"
+  data-category-id="DIC_kwDOHCc7xc4COM2i"
+  data-mapping="title"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="bottom"
+  data-theme="transparent_dark"
+  data-lang="en"
+  crossorigin="anonymous"
+  async>
+</script>
+  <!-- Reload on palette change -->
+  <script>
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object")
+      if (palette.color.scheme === "slate") {
+        var giscus = document.querySelector("script[src*=giscus]")
+        giscus.setAttribute("data-theme", "dark") 
+      }
+
+    /* Register event handlers after documented loaded */
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate" ? "dark" : "light"
+
+          /* Instruct Giscus to change theme */
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Forensics" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Forensics
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../Extracting%20Hashes%20and%20Passwords%20from%20VMWare%20Memory/" class="md-footer__link md-footer__link--next" aria-label="Next: Extracting Hashes and Passwords from VMWare Memory Snapshots" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              Extracting Hashes and Passwords from VMWare Memory Snapshots
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.tabs", "navigation.indexes"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.bd0b6b67.min.js"}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.467223ff.min.js"></script>
+      
+    
+  </body>
+</html>
